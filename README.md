@@ -1,46 +1,15 @@
-# Getting Started with Create React App
+yarn 으로 패키지 의존성 가져오시면 됩니다.<br>
+왠지 모르게 npm 은 viem 을 가져오는데 실패하네요;;<br>
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+case1, case2 함수 를 구분하여 사용했습니다.<br>
+- case1: 컨트랙트 객체 위주로 상호작용
+- case2: walletClient 객체 위주로 상호작용
+*개인적으로는 case2 가 좀더 좋을것 같습니다.*<br>
+개발자도구 console 을 사용해서 내용을 확인해 주세요.
+receipt 을 가져오는 부분은 약 12초의 시간이 걸림니다...!
 
-## Available Scripts
 
-In the project directory, you can run:
-
-### `npm start`
-
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+```bash
+yarn install
+yarn start
+```
