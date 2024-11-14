@@ -3,6 +3,8 @@ import {
     http,
     getContract,
     createPublicClient, publicActions,
+    encodeFunctionData,
+    BaseError, EstimateGasExecutionError,
 } from 'viem'
 import { privateKeyToAccount } from 'viem/accounts'
 import { holesky } from 'viem/chains'
@@ -85,4 +87,63 @@ export const case2 = async () => {
     console.log({ receipt });
     console.log({ status: receipt.status, gas: receipt.gasUsed }) // receipt.status 를 확인해야 해당 트랜잭션이 성공했는지, 안했는지 알 수 있다.
     // writeContract 에서 gas(limit) 을 8e6 으로 설정해도, 결과적으로는 사용할만큼만 사용한다.
+}
+
+export const case3 = async () => {
+    // 지갑 객체 생성
+    const wallet = createWalletClient({
+        account, // 여기에 키 넣어서 서명이 필요한 시점에 알아서 해준다.
+        chain: holesky,
+        transport: http() // @ts-ignore
+    }).extend(publicActions); // publicActions 을 추가하여 publicClient 의 일부 기능을 사용할 수 있도록 한다.
+
+    // @ts-ignore call 은 'readContract' 을 사용한다.
+    let balance = await wallet.readContract({
+        address: erc20Address,
+        abi: IERC20Abi,
+        functionName: 'balanceOf',
+        args: [account.address],
+    });
+    console.log({ balance });
+
+    // sendTransaction
+    // 1. 트랜잭션 생성
+    try {
+        let unsigned_tx = await wallet.prepareTransactionRequest({
+            to: erc20Address,
+            // @ts-ignore
+            data: encodeFunctionData({
+                abi: IERC20Abi,
+                functionName: 'transfer',
+                args: [erc20Address, 1],
+            }),
+            // gas:8e6, // gas 를 설정하지않으면 estimateGas 를 내부적으로 호출해준다...! 
+            // estimateGas 시에 예상되는 결과가 revert 라면 에러를 리턴한다.
+        });
+
+        console.log({ unsigned_tx, gas: unsigned_tx.gas });
+        // ?? unsigned_tx.gas += 1e6n
+
+        // 2. 트랜잭션 서명 (이전에 unsigned_tx 를 이용하여 메시지를 보여줄 수 있다. (yes,no 입력))
+        let signed_tx = await wallet.signTransaction(unsigned_tx);
+        console.log({ signed_tx });
+
+        // 3. 트랜잭션 실행
+        let tx = await wallet.sendRawTransaction({ serializedTransaction: signed_tx });
+        console.log({ tx });
+
+        // 4. receipt 확인
+        let receipt = await wallet.waitForTransactionReceipt({ hash: tx });
+        console.log({ receipt });
+        console.log({ status: receipt.status, gas: receipt.gasUsed }) // receipt.status 를 확인해야 해당 트랜잭션이 성공했는지, 안했는지 알 수 있다.
+    } catch (err) {
+        if (err instanceof BaseError) {
+            const revertError = err.walk(err => err instanceof EstimateGasExecutionError)
+            if (revertError instanceof EstimateGasExecutionError) {
+                console.log({ message: revertError.details });
+            } else {
+                console.log({ err });
+            }
+        }
+    }
 }
