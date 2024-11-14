@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react';
 import logo from './logo.svg';
 import './App.css';
-import { case2 } from './viem';
+import { case3 } from './viem';
 
 function App() {
   useEffect(() => {
-    case2();
+    case3();
   }, []);
 
   return (
